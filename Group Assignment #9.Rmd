@@ -1,0 +1,16 @@
+---
+title: "Group Assignment #9"
+Authors: "Lynsey Keator, Artie Maharaj, Rebecca Neal, Hongxiao Yu"
+Date: "April 14, 2020"
+output: html_notebook
+---
+In this study we want to determine for women who suffered childhood physical abuse, is there a difference in the average PTSD scores of women who also suffered childhood sexual abuse and those who did not suffer childhood sexual abuse, after accounting for the severity of the childhood physical abuse? 
+
+```{r include=FALSE}
+
+library(tidyverse)
+library(here)
+
+abuse <- read_csv("Sexual Abuse Data.csv")
+
+```
