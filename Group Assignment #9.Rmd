@@ -15,6 +15,7 @@ abuse <- read_csv("Sexual Abuse Data.csv")
 
 ```
 
+
 ### Set up Q1 side by side box plots of explanatory variable (csa) to response
 ### variable (ptsd)
 
@@ -43,11 +44,3 @@ ggplot(abuse, aes(x = csa, y = cpa))+
               title = "Relationship of Childhood Abuse to Childhood Physical 
               Abuse Scale")
 ```
-
-
-
-
-
-
-
-
