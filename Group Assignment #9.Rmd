@@ -83,6 +83,16 @@ model2.out <- lm(model2)
 abuse$predicted <- fitted.values(model2) 
 abuse$residuals <- residuals(model2)
 
+###6
+```{r}
+model2 <- abuse$ptsd ~ abuse$cpa + abuse$csa
+model2.out <- lm(model2)
+ ggplot(model2.out, aes(.fitted, .resid)) +
+  geom_point() +
+    geom_hline(yintercept=0) +
+   xlab("Fitted values")+ylab("Residuals") +
+   ggtitle("Residual vs Fitted Plot")
+
 ### 7 Calculate the residuals when modeling the response variable as a function 
 # of the explanatory variable and covariate (without interaction) and then create a 
 # Q-Q plot of the residuals to confirm the condition of a normal distribution.
