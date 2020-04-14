@@ -13,16 +13,18 @@ library(tidyverse)
 library(here)
 
 abuse <- read_csv("Sexual Abuse Data.csv")
-```
+
 ### Set up Q1 side by side box plots of explanatory variable (csa) to response
 ### variable (ptsd)
 
 ```{r}
-ggplot(abuse, aes(x = csa, y = ptsd))+
-         geom_boxplot()+
-         labs(x = "Childhood Sexual Abuse", 
-              y = "PTSD Scale",
-              title = "Relationship of Childhood Abuse to PTSD")
+
+ggplot(abuse, aes(x = csa, y = ptsd)) +
+  geom_boxplot()+
+   labs(x = "Childhood Sexual Abuse",
+       y = "PTSD Scale",
+       title = "Relationship of Childhood Abuse to PTSD")
+
 ```
 
 ### Q2 Descriptive statistics for the response variable (ptsd) at each level 
@@ -81,3 +83,35 @@ model2.out <- lm(model2)
 abuse$predicted <- fitted.values(model2) 
 abuse$residuals <- residuals(model2)
 
+### 7 Calculate the residuals when modeling the response variable as a function 
+# of the explanatory variable and covariate (without interaction) and then create a 
+# Q-Q plot of the residuals to confirm the condition of a normal distribution.
+
+```{r}
+model2 <- abuse$ptsd ~ abuse$cpa + abuse$csa
+model2.out <- lm(model2)
+ggplot(model2.out, aes(sample = rstandard(model2.out))) +
+  stat_qq() +
+  stat_qq_line() +
+  labs(x = "Theoretical Quantiles", y = "Sample Quantiles")
+```
+
+### 8. Illustrate the relationship of the explanatory variable to the response variable 
+# after accounting for the covariate by constructing a scatterplot with 
+# separate regression lines for each level of the explanatory variable.
+
+```{r}
+ggplot(data = abuse, mapping = aes(x = cpa, y = ptsd, color = csa)) +
+  geom_point() +
+  labs(x = "Childhood Physical Abuse Scale",
+       y= "PTSD score",
+       title = "Association between PTSD score and Childhood Physical Abuse Scale",
+       color = "CSA") +
+  stat_smooth(method = "lm") +
+   scale_color_discrete(labels=c('Abused', 'Not Abused'))
+```
+# 9. Construct the ANCOVA table after modeling the response variable as a function 
+# of the explanatory variable and covariate (without interaction).
+```{r}
+model2.out
+```
