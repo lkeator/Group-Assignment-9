@@ -1,24 +1,24 @@
 ---
 title: "Group Assignment #9"
 output: html_notebook
-authors: "Lynsey Keator, Artie Maharaj, Rebecca Neal, Hongxiao Yu"
+author: "Lynsey Keator, Artie Maharaj, Rebecca Neal, Hongxiao Yu"
 date: "April 14, 2020"
-
 ---
 
-In this study, our research question is: For women who suffered childhood physical abuse (CPA), is there a difference in the average PTSD scores of women who also suffered childhood sexual abuse (CSA) and those who did not suffer childhood sexual abuse, after accounting for the severity of the childhood physical abuse? 
+```{r Load data, include=FALSE}
 
-```{r}
-library(here)
 library(tidyverse)
+library(here)
 
 abuse <- read_csv("Sexual Abuse Data.csv")
 ```
 
+In this study, our research question is: For women who suffered childhood physical abuse (CPA), is there a difference in the average PTSD scores of women who also suffered childhood sexual abuse (CSA) and those who did not suffer childhood sexual abuse, after accounting for the severity of the childhood physical abuse? 
+
 ### **Question 1: **
 #### *Create side-by-side box plots of explanatory variable (CSA) to response variable (PTSD).*
 
-```{r echo=FALSE}
+```{r Q1, echo=FALSE}
 ggplot(abuse, aes(x = csa, y = ptsd)) +
   geom_boxplot() +
   labs(x = "Childhood Sexual Abuse",
@@ -31,14 +31,20 @@ ggplot(abuse, aes(x = csa, y = ptsd)) +
 ### **Question 2: **
 #### *Calculate descriptive statistics for the response variable (PTSD) at each level of the categorical variable (CSA).*
 
-```{r echo=FALSE}
+```{r Q2A, echo=FALSE}
 tapply(abuse$ptsd, abuse$csa, summary)
 ```
+Here are the five-number summaries for the repsonse variable (PTSD) at each level of the categorical variable (CSA).
+
+```{r Q2B, echo=FALSE}
+tapply(abuse$ptsd, abuse$csa, sd)
+```
+Here are the standard deviations for the response variable (PTSD) at each level of the categorical variable (CSA).
 
 ### **Question 3: **
 #### *Create side-by-side boxplots showing the relationship of the covariate (CPA) to the explanatory variable (CSA).*
 
-```{r echo=FALSE}
+```{r Q3, echo=FALSE}
 ggplot(abuse, aes(x = csa, y = cpa))+
          geom_boxplot()+
          labs(x = "Childhood Sexual Abuse", 
@@ -53,13 +59,13 @@ ggplot(abuse, aes(x = csa, y = cpa))+
 ### **Question 4: **
 #### *Calculate descriptive statistics (five number summaries and means) for the covariate (CPA) at each level of of the categorical variable (CSA: Abuse or Not Abused). *
 
-```{r echo=FALSE}
+```{r Q4A, echo=FALSE}
 tapply(abuse$cpa, abuse$csa, summary)
 ```
 
 Here are the standard deviations for covariate (CPA) at each level of the categorical variable (CSA).
 
-```{r}
+```{r Q4B, echo=FALSE}
 tapply(abuse$cpa, abuse$csa, sd)
 ```
 
@@ -75,7 +81,7 @@ ggplot(subset(abuse, csa == "Abused" | csa == "NotAbused"),
 ### **Question 5: **
 #### *Model the response variable (PTSD) as a function of the explanatory variable (CSA), the covariate (CPA) and the interaction of these variables and test the interaction to confirm that there is not much evidence of an interaction.*
 
-```{r}
+```{r Q5, echo=FALSE}
 model1 <- abuse$ptsd ~ abuse$cpa*abuse$csa
 model1.out <- lm(model1)
 anova(model1.out)
@@ -86,7 +92,7 @@ A model that includes, Childhood Physical Abuse (CPA), Childhood Sexual Abuse (C
 ### **Question 6:** 
 #### *Calculate the predicted values and residuals when modeling the response variable as a function of the explanatory variable and covariate *(without interaction)* and then plot the residuals as function of the predicted values to confirm homogeneity of variance. *
 
-```{r include=FALSE}
+```{r Q6A, include=FALSE}
 model2 <- abuse$ptsd ~ abuse$cpa+abuse$csa
 model2.out <- lm(model2)
 
@@ -94,7 +100,7 @@ abuse$predicted <- fitted.values(model2)
 abuse$residuals <- residuals(model2)
 ```
 
-```{r echo=FALSE}
+```{r Q6B, echo=FALSE}
 ggplot(model2.out, aes(.fitted, .resid)) +
   geom_point() +
     geom_hline(yintercept=0) +
@@ -106,7 +112,7 @@ This plot of residuals as a function of predicted values confirms homogeneity of
 ### *Question 7:*
 #### **Calculate the residuals when modeling the response variable as a function of the explanatory variable and covariate (without interaction) and then create a Q-Q plot of the residuals to confirm the condition of a normal distribution.**
 
-```{r echo=FALSE}
+```{r Q7, echo=FALSE}
 model2 <- abuse$ptsd ~ abuse$cpa + abuse$csa
 model2.out <- lm(model2)
 ggplot(model2.out, aes(sample = rstandard(model2.out))) +
@@ -121,7 +127,7 @@ The Q-Q plot of residuals confirms the condition of a normal distribution.
 ### **Question 8: **
 #### *Illustrate the relationship of the explanatory variable to the response variable after accounting for the covariate by constructing a scatterplot with separate regression lines for each level of the explanatory variable.*
 
-```{r}
+```{r Q8, echo=FALSE}
 ggplot(data = abuse, mapping = aes(x = cpa, y = ptsd, color = csa)) +
   geom_point() +
   labs(x = "Childhood Physical Abuse Scale",
@@ -135,6 +141,6 @@ ggplot(data = abuse, mapping = aes(x = cpa, y = ptsd, color = csa)) +
 ### **Question 9:**
 #### *Construct the ANCOVA table after modeling the response variable as a function of the explanatory variable and covariate (without interaction).*
 
-```{r echo=FALSE}
+```{r Q9, echo=FALSE}
 model2.out
 ```
