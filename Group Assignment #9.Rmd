@@ -1,3 +1,4 @@
+
 ---
 title: "Group Assignment #9"
 Authors: "Lynsey Keator, Artie Maharaj, Rebecca Neal, Hongxiao Yu"
@@ -12,10 +13,7 @@ library(tidyverse)
 library(here)
 
 abuse <- read_csv("Sexual Abuse Data.csv")
-
 ```
-
-
 ### Set up Q1 side by side box plots of explanatory variable (csa) to response
 ### variable (ptsd)
 
@@ -43,4 +41,43 @@ ggplot(abuse, aes(x = csa, y = cpa))+
               y = "Childhood Physical Abuse Scale",
               title = "Relationship of Childhood Abuse to Childhood Physical 
               Abuse Scale")
+
 ```
+4. Descriptive statistics (five number summaries and means) for the covariate (Childhood Physical Abuse(CPA)) at each level of of the categorical variable (CSA: Abuse or Not Abused). 
+
+```{r}
+tapply(abuse$cpa, abuse$csa, summary)
+
+```
+Here are the standard deviations for covariate (CPA) at each level of the categorical variable (CSA).
+
+```{r}
+tapply(abuse$cpa, abuse$csa, sd)
+```
+Here is a plot showing PTSD as a function of childhood Physical Abuse by Childhood Sexual Abuse. 
+
+```{r}
+ggplot(subset(abuse, csa == "Abused" | csa == "NotAbused"),
+        aes(x = cpa, y = ptsd, color = csa)) +
+        geom_point() +
+        labs(x= "Childhood Physical Abuse Score", y = "PTSD Score", 
+        title = "PTSD as a Function of Childhood Physical Abuse by \n Childhood Sexual Abuse")
+```
+5. Model the response variable (PTSD) as a function of the explanatory variable (CSA), the covariate (CPA) and the interaction of these variables and test the interaction to confirm that there is not much evidence of an interaction.
+
+A model that includes, Childhood Physical Abuse (CPA), Childhood Sexual Abuse(CSA) and the interaction between CPA and CSA results in the conclusion that no interaction cannot be inferred to the general population (p= 0.397). 
+
+```{r}
+model1 <- abuse$ptsd ~ abuse$cpa*abuse$csa
+model1.out <- lm(model1)
+anova(model1.out)
+```
+6. Calculate the predicted values and residuals when modeling the response variable as a function of the explanatory variable and covariate (without interaction) and then plot the residuals as function of the predicted values to confirm homogeneity of variance. 
+
+```{r}
+model2 <- abuse$ptsd ~ abuse$cpa+abuse$csa
+model2.out <- lm(model2)
+
+abuse$predicted <- fitted.values(model2) 
+abuse$residuals <- residuals(model2)
+
