@@ -1,3 +1,4 @@
+
 ---
 title: "Group Assignment #9"
 Authors: "Lynsey Keator, Artie Maharaj, Rebecca Neal, Hongxiao Yu"
@@ -12,6 +13,34 @@ library(tidyverse)
 library(here)
 
 abuse <- read_csv("Sexual Abuse Data.csv")
+```
+### Set up Q1 side by side box plots of explanatory variable (csa) to response
+### variable (ptsd)
+
+```{r}
+ggplot(abuse, aes(x = csa, y = ptsd))+
+         geom_boxplot()+
+         labs(x = "Childhood Sexual Abuse", 
+              y = "PTSD Scale",
+              title = "Relationship of Childhood Abuse to PTSD")
+```
+
+### Q2 Descriptive statistics for the response variable (ptsd) at each level 
+### of the categorical variable (csa)
+```{r}
+tapply(abuse$ptsd, abuse$csa, summary)
+```
+
+### Q3 side by side box plots of the covariate (cpa) to the explanatory 
+### variable (csa)
+
+```{r}
+ggplot(abuse, aes(x = csa, y = cpa))+
+         geom_boxplot()+
+         labs(x = "Childhood Sexual Abuse", 
+              y = "Childhood Physical Abuse Scale",
+              title = "Relationship of Childhood Abuse to Childhood Physical 
+              Abuse Scale")
 
 ```
 4. Descriptive statistics (five number summaries and means) for the covariate (Childhood Physical Abuse(CPA)) at each level of of the categorical variable (CSA: Abuse or Not Abused). 
@@ -52,4 +81,3 @@ model2.out <- lm(model2)
 abuse$predicted <- fitted.values(model2) 
 abuse$residuals <- residuals(model2)
 
-```
