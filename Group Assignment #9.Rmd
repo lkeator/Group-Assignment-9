@@ -1,114 +1,125 @@
-
 ---
 title: "Group Assignment #9"
-Authors: "Lynsey Keator, Artie Maharaj, Rebecca Neal, Hongxiao Yu"
-Date: "April 14, 2020"
 output: html_notebook
+authors: "Lynsey Keator, Artie Maharaj, Rebecca Neal, Hongxiao Yu"
+date: "April 14, 2020"
+
 ---
-In this study we want to determine for women who suffered childhood physical abuse, is there a difference in the average PTSD scores of women who also suffered childhood sexual abuse and those who did not suffer childhood sexual abuse, after accounting for the severity of the childhood physical abuse? 
 
-```{r include=FALSE}
+In this study, our research question is: For women who suffered childhood physical abuse (CPA), is there a difference in the average PTSD scores of women who also suffered childhood sexual abuse (CSA) and those who did not suffer childhood sexual abuse, after accounting for the severity of the childhood physical abuse? 
 
-library(tidyverse)
+```{r}
 library(here)
+library(tidyverse)
 
 abuse <- read_csv("Sexual Abuse Data.csv")
-
-### Set up Q1 side by side box plots of explanatory variable (csa) to response
-### variable (ptsd)
-
-```{r}
-
-ggplot(abuse, aes(x = csa, y = ptsd)) +
-  geom_boxplot()+
-   labs(x = "Childhood Sexual Abuse",
-       y = "PTSD Scale",
-       title = "Relationship of Childhood Abuse to PTSD")
-
 ```
 
-### Q2 Descriptive statistics for the response variable (ptsd) at each level 
-### of the categorical variable (csa)
-```{r}
+### **Question 1: **
+#### *Create side-by-side box plots of explanatory variable (CSA) to response variable (PTSD).*
+
+```{r echo=FALSE}
+ggplot(abuse, aes(x = csa, y = ptsd)) +
+  geom_boxplot() +
+  labs(x = "Childhood Sexual Abuse",
+       y = "PTSD Scale",
+       title = "Relationship of Childhood Abuse to PTSD",
+       caption = "This is a graph comparing PTSD scores for women who suffered childhood sexual abuse. Higher scores indicate higher PTSD") +
+  scale_x_discrete(labels = c('Abused', 'Not Abused'))
+```
+
+### **Question 2: **
+#### *Calculate descriptive statistics for the response variable (PTSD) at each level of the categorical variable (CSA).*
+
+```{r echo=FALSE}
 tapply(abuse$ptsd, abuse$csa, summary)
 ```
 
-### Q3 side by side box plots of the covariate (cpa) to the explanatory 
-### variable (csa)
+### **Question 3: **
+#### *Create side-by-side boxplots showing the relationship of the covariate (CPA) to the explanatory variable (CSA).*
 
-```{r}
+```{r echo=FALSE}
 ggplot(abuse, aes(x = csa, y = cpa))+
          geom_boxplot()+
          labs(x = "Childhood Sexual Abuse", 
               y = "Childhood Physical Abuse Scale",
               title = "Relationship of Childhood Abuse to Childhood Physical 
-              Abuse Scale")
+              Abuse",
+              caption = "This graph compares childhood physical abuse for women who suffered childhood sexual abuse and those who did not. Higher scores indicate more abuse.") +
+  scale_x_discrete(labels = c('Abused', 'Not Abused'))
 
 ```
-4. Descriptive statistics (five number summaries and means) for the covariate (Childhood Physical Abuse(CPA)) at each level of of the categorical variable (CSA: Abuse or Not Abused). 
 
-```{r}
+### **Question 4: **
+#### *Calculate descriptive statistics (five number summaries and means) for the covariate (CPA) at each level of of the categorical variable (CSA: Abuse or Not Abused). *
+
+```{r echo=FALSE}
 tapply(abuse$cpa, abuse$csa, summary)
-
 ```
+
 Here are the standard deviations for covariate (CPA) at each level of the categorical variable (CSA).
 
 ```{r}
 tapply(abuse$cpa, abuse$csa, sd)
 ```
-Here is a plot showing PTSD as a function of childhood Physical Abuse by Childhood Sexual Abuse. 
 
-```{r}
+Here is a plot showing PTSD *as a function of* childhood physical abuse by childhood sexual abuse. 
+
+```{r echo=FALSE}
 ggplot(subset(abuse, csa == "Abused" | csa == "NotAbused"),
         aes(x = cpa, y = ptsd, color = csa)) +
         geom_point() +
         labs(x= "Childhood Physical Abuse Score", y = "PTSD Score", 
-        title = "PTSD as a Function of Childhood Physical Abuse by \n Childhood Sexual Abuse")
+        title = "PTSD as a Function of CPA by CSA")
 ```
-5. Model the response variable (PTSD) as a function of the explanatory variable (CSA), the covariate (CPA) and the interaction of these variables and test the interaction to confirm that there is not much evidence of an interaction.
-
-A model that includes, Childhood Physical Abuse (CPA), Childhood Sexual Abuse(CSA) and the interaction between CPA and CSA results in the conclusion that no interaction cannot be inferred to the general population (p= 0.397). 
+### **Question 5: **
+#### *Model the response variable (PTSD) as a function of the explanatory variable (CSA), the covariate (CPA) and the interaction of these variables and test the interaction to confirm that there is not much evidence of an interaction.*
 
 ```{r}
 model1 <- abuse$ptsd ~ abuse$cpa*abuse$csa
 model1.out <- lm(model1)
 anova(model1.out)
 ```
-6. Calculate the predicted values and residuals when modeling the response variable as a function of the explanatory variable and covariate (without interaction) and then plot the residuals as function of the predicted values to confirm homogeneity of variance. 
 
-```{r}
+A model that includes, Childhood Physical Abuse (CPA), Childhood Sexual Abuse (CSA) and the interaction between CPA and CSA results in the conclusion that there is not much evidence of an interaction. Interaction cannot be inferred to the general population (p = 0.397).
+
+### **Question 6:** 
+#### *Calculate the predicted values and residuals when modeling the response variable as a function of the explanatory variable and covariate *(without interaction)* and then plot the residuals as function of the predicted values to confirm homogeneity of variance. *
+
+```{r include=FALSE}
 model2 <- abuse$ptsd ~ abuse$cpa+abuse$csa
 model2.out <- lm(model2)
 
 abuse$predicted <- fitted.values(model2) 
 abuse$residuals <- residuals(model2)
+```
 
-###6
-```{r}
-model2 <- abuse$ptsd ~ abuse$cpa + abuse$csa
-model2.out <- lm(model2)
- ggplot(model2.out, aes(.fitted, .resid)) +
+```{r echo=FALSE}
+ggplot(model2.out, aes(.fitted, .resid)) +
   geom_point() +
     geom_hline(yintercept=0) +
    xlab("Fitted values")+ylab("Residuals") +
    ggtitle("Residual vs Fitted Plot")
+```
+This plot of residuals as a function of predicted values confirms homogeneity of variance.
 
-### 7 Calculate the residuals when modeling the response variable as a function 
-# of the explanatory variable and covariate (without interaction) and then create a 
-# Q-Q plot of the residuals to confirm the condition of a normal distribution.
+### *Question 7:*
+#### **Calculate the residuals when modeling the response variable as a function of the explanatory variable and covariate (without interaction) and then create a Q-Q plot of the residuals to confirm the condition of a normal distribution.**
 
-```{r}
+```{r echo=FALSE}
 model2 <- abuse$ptsd ~ abuse$cpa + abuse$csa
 model2.out <- lm(model2)
 ggplot(model2.out, aes(sample = rstandard(model2.out))) +
   stat_qq() +
   stat_qq_line() +
-  labs(x = "Theoretical Quantiles", y = "Sample Quantiles")
+  labs(x = "Theoretical Quantiles", 
+       y = "Standardized Residuals",
+       title = "Normal Q-Q")
 ```
+The Q-Q plot of residuals confirms the condition of a normal distribution.
 
-### 8. Illustrate the relationship of the explanatory variable to the response variable 
-# after accounting for the covariate by constructing a scatterplot with 
-# separate regression lines for each level of the explanatory variable.
+### **Question 8: **
+#### *Illustrate the relationship of the explanatory variable to the response variable after accounting for the covariate by constructing a scatterplot with separate regression lines for each level of the explanatory variable.*
 
 ```{r}
 ggplot(data = abuse, mapping = aes(x = cpa, y = ptsd, color = csa)) +
@@ -116,12 +127,14 @@ ggplot(data = abuse, mapping = aes(x = cpa, y = ptsd, color = csa)) +
   labs(x = "Childhood Physical Abuse Scale",
        y= "PTSD score",
        title = "Association between PTSD score and Childhood Physical Abuse Scale",
+       caption = "This is a scatterplot of PTSD scores as a function of CSA and CPA (without interaction).",
        color = "CSA") +
   stat_smooth(method = "lm") +
    scale_color_discrete(labels=c('Abused', 'Not Abused'))
 ```
-# 9. Construct the ANCOVA table after modeling the response variable as a function 
-# of the explanatory variable and covariate (without interaction).
-```{r}
+### **Question 9:**
+#### *Construct the ANCOVA table after modeling the response variable as a function of the explanatory variable and covariate (without interaction).*
+
+```{r echo=FALSE}
 model2.out
 ```
